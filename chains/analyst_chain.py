@@ -27,7 +27,7 @@ if os.getenv("LANGSMITH_TRACING") == "true":
 
 # Initialize Gemini
 llm = ChatGoogleGenerativeAI(
-    model="gemini-3.6-flash",
+    model="gemini-2.5-flash",
     google_api_key=api_key
 )
 
