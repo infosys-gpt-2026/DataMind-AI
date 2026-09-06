@@ -43,7 +43,15 @@ Always structure your final answer professionally.
 agent_prompt = ChatPromptTemplate.from_messages(
     [
         ("system", AGENT_SYSTEM_PROMPT),
+        MessagesPlaceholder(variable_name="chat_history"),
         ("human", "{question}"),
         MessagesPlaceholder(variable_name="agent_scratchpad"),
     ]
+)
+
+analyst_agent = create_tool_calling_agent(llm, ANALYST_TOOLS, agent_prompt)
+analyst_agent_executor = AgentExecutor(
+    agent=analyst_agent,
+    tools=ANALYST_TOOLS,
+    verbose=True,
 )
