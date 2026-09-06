@@ -1,0 +1,13 @@
+﻿langchain
+langchain-core
+langchain-community
+langchain-google-genai
+langsmith
+fastapi
+uvicorn
+streamlit
+pandas
+numpy
+matplotlib
+plotly
+python-dotenv
