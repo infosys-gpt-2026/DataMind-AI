@@ -1,5 +1,12 @@
 {
     "cSpell.words": [
-        "pycache"
+        "cursorignore",
+        "Cython",
+        "dmypy",
+        "mkdocs",
+        "pipenv",
+        "Pipfile",
+        "pycache",
+        "spyproject"
     ]
 }
