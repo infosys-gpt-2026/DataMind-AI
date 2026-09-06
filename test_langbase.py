@@ -1,22 +1,20 @@
 ﻿import os
+import json
 from dotenv import load_dotenv
-from langbase import Langbase, get_runner
+from langbase import Langbase
 
-# Load environment variables
 load_dotenv()
 
-# Get API key
-api_key = os.getenv("LANGBASE_API_KEY")
+LANGBASE_API_KEY = os.getenv("LANGBASE_API_KEY")
 
-if not api_key:
+if not LANGBASE_API_KEY:
     raise ValueError("LANGBASE_API_KEY not found in .env")
 
 print("🚀 Starting DataMind AI with Langbase...")
+print("🔌 Connecting to datamind-ai-analyst...")
 
-# Initialize Langbase
-langbase = Langbase(api_key=api_key)
+langbase = Langbase(api_key=LANGBASE_API_KEY)
 
-# Run your Pipe
 response = langbase.pipes.run(
     name="datamind-ai-analyst",
     messages=[
@@ -24,12 +22,18 @@ response = langbase.pipes.run(
             "role": "user",
             "content": "What are the most important KPIs for a sales dashboard?"
         }
-    ]
+    ],
+    stream=False
 )
 
+print("\n🔍 Raw response structure:\n")
+print(json.dumps(response, indent=2, default=str))
+
 print("\n🤖 DataMind AI Response:\n")
+# Try the most common Langbase response shape
+try:
+    print(response["choices"][0]["message"]["content"]) # pyright: ignore[reportTypedDictNotRequiredAccess, reportGeneralTypeIssues]
+except (KeyError, TypeError):
+    print("Could not find response['choices'][0]['message']['content'] — check the raw structure printed above")
 
-runner = get_runner(response)
-
-for content in runner.text_generator():
-    print(content, end="", flush=True)
+print("\n✅ Langbase Pipe test successful!")
