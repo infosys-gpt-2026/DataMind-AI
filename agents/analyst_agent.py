@@ -5,7 +5,7 @@ from langchain_classic.agents import create_tool_calling_agent, AgentExecutor
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_google_genai import ChatGoogleGenerativeAI
 
-from tools.analyst_tools import ANALYST_TOOLS # pyright: ignore[reportAttributeAccessIssue]
+from tools.analyst_tools import ANALYST_TOOLS
 
 load_dotenv()
 
@@ -31,7 +31,11 @@ Your responsibilities:
 4. Use run_pandas_query or calculate_aggregate to answer specific numeric questions.
 5. Explain findings in clear business language, and suggest relevant KPIs or
    follow-up analysis where useful.
-6. If no dataset has been loaded yet, ask the user for a file path and call load_dataset.
+6. Never assume no dataset is loaded just because this is a new question — the data from
+   an earlier turn in this session is still available. Always try the relevant tool
+   (get_data_summary, run_pandas_query, calculate_aggregate, etc.) first. Only ask the
+   user for a file path if a tool actually responds with
+   "No dataset loaded. Call load_dataset first."
 
 Always structure your final answer professionally.
 """
@@ -42,13 +46,4 @@ agent_prompt = ChatPromptTemplate.from_messages(
         ("human", "{question}"),
         MessagesPlaceholder(variable_name="agent_scratchpad"),
     ]
-)
-
-agent = create_tool_calling_agent(llm, ANALYST_TOOLS, agent_prompt)
-
-analyst_agent_executor = AgentExecutor(
-    agent=agent,
-    tools=ANALYST_TOOLS,
-    verbose=True,
-    handle_parsing_errors=True,
 )
