@@ -1,42 +1,114 @@
-﻿from langchain_core.messages import HumanMessage, AIMessage
+﻿from dotenv import load_dotenv
 
-from agents.analyst_agent import analyst_agent_executor # pyright: ignore[reportAttributeAccessIssue]
+from chains.router import (
+    detect_intent,
+    get_chain,
+)
 
-print("\n" + "=" * 60)
-print("🤖 Welcome to DataMind AI")
-print("📊 Your AI-Powered Data Analyst (now with real data access)")
-print("=" * 60)
-print("💡 Tip: ask it to load a CSV first, e.g.")
-print("   'Load data/sample_sales.csv and summarize it'")
+from agents.analyst_agent import (
+    run_analyst_agent,
+)
 
-chat_history = []
 
-while True:
-    question = input("\n💬 Ask a question (or type 'exit'): ")
+load_dotenv()
 
-    if question.lower() in ["exit", "quit", "bye"]:
-        print("\n👋 Thank you for using DataMind AI!")
-        break
 
-    if not question.strip():
-        print("⚠️ Please enter a question.")
-        continue
-
-    print("\n🔍 DataMind AI is analyzing...\n")
-
-    try:
-        response = analyst_agent_executor.invoke(
-            {"question": question, "chat_history": chat_history}
-        )
-        output = response["output"]
-        print(output)
-
-        # Remember this turn so the agent has real context on the next question
-        chat_history.append(HumanMessage(content=question))
-        chat_history.append(AIMessage(content=output))
-
-    except Exception as error:
-        print("\n❌ An error occurred:")
-        print(error)
+def main():
 
     print("\n" + "=" * 60)
+    print("🤖 Welcome to DataMind AI")
+    print("📊 Your AI-Powered Data Analyst")
+    print("=" * 60)
+
+
+    while True:
+
+        question = input(
+            "\n💬 Ask a question (or type 'exit'): "
+        )
+
+
+        # Exit condition
+        if question.lower() in [
+            "exit",
+            "quit",
+            "bye",
+        ]:
+
+            print(
+                "\n👋 Thank you for using DataMind AI!"
+            )
+
+            break
+
+
+        # Empty input
+        if not question.strip():
+
+            print(
+                "⚠️ Please enter a valid question."
+            )
+
+            continue
+
+
+        print(
+            "\n🔍 DataMind AI is analyzing..."
+        )
+
+
+        try:
+
+            # Detect intent
+            intent = detect_intent(question)
+
+            print(
+                f"🧠 Detected Intent: {intent.upper()}"
+            )
+
+            print(
+                "\n🤖 DataMind AI Response:\n"
+            )
+
+
+            # ==========================
+            # ANALYST AGENT
+            # ==========================
+
+            if intent == "analyst":
+
+                response = run_analyst_agent(
+                    question
+                )
+
+
+            # ==========================
+            # OTHER CHAINS
+            # ==========================
+
+            else:
+
+                chain = get_chain(intent)
+
+                response = chain.invoke( # pyright: ignore[reportOptionalMemberAccess]
+                    {
+                        "question": question
+                    }
+                )
+
+
+            print(response)
+
+
+        except Exception as error:
+
+            print(
+                "\n❌ An error occurred:"
+            )
+
+            print(error)
+
+
+if __name__ == "__main__":
+
+    main()

@@ -10,13 +10,13 @@ from langchain_core.output_parsers import (
     StrOutputParser,
 )
 
-from prompts.analyst_prompt import analyst_prompt
+from prompts.python_prompt import python_prompt
 
 
 load_dotenv()
 
 
-def create_analyst_chain():
+def create_python_chain():
 
     api_key = os.getenv("GOOGLE_API_KEY")
 
@@ -28,11 +28,11 @@ def create_analyst_chain():
     llm = ChatGoogleGenerativeAI(
         model=model_name,
         google_api_key=api_key,
-        temperature=0.3,
+        temperature=0.2,
     )
 
     return (
-        analyst_prompt
+        python_prompt
         | llm
         | StrOutputParser()
     )

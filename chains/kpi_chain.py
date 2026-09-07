@@ -10,13 +10,13 @@ from langchain_core.output_parsers import (
     StrOutputParser,
 )
 
-from prompts.analyst_prompt import analyst_prompt
+from prompts.kpi_prompt import kpi_prompt
 
 
 load_dotenv()
 
 
-def create_analyst_chain():
+def create_kpi_chain():
 
     api_key = os.getenv("GOOGLE_API_KEY")
 
@@ -32,7 +32,7 @@ def create_analyst_chain():
     )
 
     return (
-        analyst_prompt
+        kpi_prompt
         | llm
         | StrOutputParser()
     )
