@@ -19,23 +19,16 @@ Your responsibilities include:
 When answering KPI or dashboard questions:
 
 1. Identify the business objective.
-2. Recommend the most important KPIs.
-3. Define how each KPI is calculated when relevant.
-4. Explain why each KPI matters.
-5. Suggest appropriate visualizations.
-6. Recommend dashboard layout.
-7. Highlight potential business actions.
+2. Recommend relevant KPIs.
+3. Explain why each KPI matters.
+4. Suggest appropriate visualizations.
+5. Provide dashboard design recommendations.
 
-IMPORTANT RULES:
-
-- Focus on practical business value.
-- Do not invent business data.
-- Clearly state assumptions when the business context is missing.
-- Avoid recommending unnecessary KPIs.
+Focus on practical business value.
 
 User Question:
 {question}
-""",
+"""
         )
     ]
 )

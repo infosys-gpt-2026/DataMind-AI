@@ -1,73 +1,27 @@
 ﻿from agents.analyst_agent import run_analyst_agent
+from agents.sql_agent import run_sql_agent
+from agents.python_agent import run_python_agent
+from agents.kpi_agent import run_kpi_agent
 
-from chains.sql_chain import create_sql_chain
-from chains.python_chain import create_python_chain
-from chains.kpi_chain import create_kpi_chain
-
-
-# =====================================
-# DETECT INTENT
-# =====================================
 
 def detect_intent(question: str) -> str:
 
     question = question.lower()
 
-
-    # ---------------------------------
-    # ANALYST / DATASET INTENT
-    # ---------------------------------
-
-    analyst_keywords = [
-        "dataset",
-        "data",
-        "load",
-        "region",
-        "product",
-        "category",
-        "sales data",
-        "available",
-        "summary of",
-        "missing values",
-        "average sales",
-        "total sales",
-        "highest sales",
-        "lowest sales",
-        "filter",
-        "records",
-        "rows",
-    ]
-
-
-    if any(keyword in question for keyword in analyst_keywords):
-        return "analyst"
-
-
-    # ---------------------------------
-    # SQL INTENT
-    # ---------------------------------
-
+    # SQL
     sql_keywords = [
         "sql",
         "select",
         "join",
-        "query",
         "database",
         "mysql",
         "postgresql",
-        "table",
+        "query",
         "cte",
         "window function",
     ]
 
-    if any(keyword in question for keyword in sql_keywords):
-        return "sql"
-
-
-    # ---------------------------------
-    # PYTHON INTENT
-    # ---------------------------------
-
+    # Python
     python_keywords = [
         "python",
         "pandas",
@@ -76,17 +30,15 @@ def detect_intent(question: str) -> str:
         "matplotlib",
         "seaborn",
         "python code",
-        "script",
     ]
+
+    if any(keyword in question for keyword in sql_keywords):
+        return "sql"
 
     if any(keyword in question for keyword in python_keywords):
         return "python"
 
-
-    # ---------------------------------
-    # KPI INTENT
-    # ---------------------------------
-
+    # KPI / Dashboard
     kpi_keywords = [
         "kpi",
         "dashboard",
@@ -98,27 +50,31 @@ def detect_intent(question: str) -> str:
         "business performance",
     ]
 
-    if any(keyword in question for keyword in kpi_keywords):
-        return "kpi"
+    return (
+        "kpi"
+        if any(keyword in question for keyword in kpi_keywords)
+        else "analyst"
+    )
 
 
-    # Default
-    return "analyst"
+def route_question(question: str):
 
-
-# =====================================
-# GET CHAIN
-# =====================================
-
-def get_chain(intent: str):
+    intent = detect_intent(question)
 
     if intent == "sql":
-        return create_sql_chain()
+
+        response = run_sql_agent(question)
 
     elif intent == "python":
-        return create_python_chain()
+
+        response = run_python_agent(question)
 
     elif intent == "kpi":
-        return create_kpi_chain()
 
-    return None
+        response = run_kpi_agent(question)
+
+    else:
+
+        response = run_analyst_agent(question)
+
+    return intent, response
