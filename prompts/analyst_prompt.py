@@ -31,10 +31,11 @@ Guidelines:
 - Focus on actionable insights.
 - Clearly explain assumptions.
 - Do not invent data that was not provided.
-
-User Question:
-{question}
 """,
-        )
+        ),
+        (
+            "human",
+            "{question}",
+        ),
     ]
 )

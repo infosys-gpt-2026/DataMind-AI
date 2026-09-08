@@ -17,7 +17,7 @@ def main():
 
         question = input(
             "\n💬 Ask a question (or type 'exit'): "
-        )
+        ).strip()
 
         if question.lower() in [
             "exit",
@@ -25,31 +25,47 @@ def main():
             "bye",
         ]:
 
-            print("\n👋 Thank you for using DataMind AI!")
+            print(
+                "\n👋 Thank you for using DataMind AI!"
+            )
+
             break
 
-        if not question.strip():
+        if not question:
 
-            print("⚠️ Please enter a valid question.")
+            print(
+                "⚠️ Please enter a valid question."
+            )
+
             continue
 
-        print("\n🔍 DataMind AI is analyzing...")
+        print(
+            "\n🔍 DataMind AI is analyzing..."
+        )
 
         try:
 
-            intent, response = route_question(question)
-
-            print(
-                f"🧠 Detected Intent: {intent.upper()}"
+            intent, response = route_question(
+                question
             )
 
-            print("\n🤖 DataMind AI Response:\n")
+            print(
+                f"🧠 Detected Intent: "
+                f"{intent.upper()}"
+            )
+
+            print(
+                "\n🤖 DataMind AI Response:\n"
+            )
 
             print(response)
 
         except Exception as error:
 
-            print("\n❌ An error occurred:")
+            print(
+                "\n❌ An error occurred:"
+            )
+
             print(error)
 
 

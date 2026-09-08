@@ -3,61 +3,65 @@ from agents.sql_agent import run_sql_agent
 from agents.python_agent import run_python_agent
 from agents.kpi_agent import run_kpi_agent
 
+from utils.response_formatter import clean_response
+
 
 def detect_intent(question: str) -> str:
+    """
+    Detect which agent should handle the user's question.
+    """
 
-    question = question.lower()
+    question_lower = question.lower()
 
-    # SQL
+    # SQL Intent
     sql_keywords = [
         "sql",
         "select",
         "join",
-        "database",
-        "mysql",
-        "postgresql",
         "query",
-        "cte",
+        "database",
+        "table",
+        "group by",
         "window function",
     ]
 
-    # Python
+    # Python Intent
     python_keywords = [
         "python",
         "pandas",
         "numpy",
         "dataframe",
-        "matplotlib",
-        "seaborn",
-        "python code",
+        "code",
     ]
 
-    if any(keyword in question for keyword in sql_keywords):
+    # Check SQL
+    if any(keyword in question_lower for keyword in sql_keywords):
         return "sql"
 
-    if any(keyword in question for keyword in python_keywords):
+    if any(keyword in question_lower for keyword in python_keywords):
         return "python"
 
-    # KPI / Dashboard
+    # KPI Intent
     kpi_keywords = [
         "kpi",
-        "dashboard",
-        "power bi",
-        "tableau",
-        "metric",
-        "visualization",
-        "chart",
-        "business performance",
+        "key performance indicator",
+        "metrics",
+        "what should i track",
+        "dashboard metrics",
     ]
 
+    # Check KPI
     return (
         "kpi"
-        if any(keyword in question for keyword in kpi_keywords)
+        if any(keyword in question_lower for keyword in kpi_keywords)
         else "analyst"
     )
 
 
 def route_question(question: str):
+    """
+    Route the question to the correct AI agent.
+    """
 
     intent = detect_intent(question)
 
@@ -77,4 +81,7 @@ def route_question(question: str):
 
         response = run_analyst_agent(question)
 
-    return intent, response
+    # ⭐ CLEAN THE RESPONSE HERE
+    cleaned_response = clean_response(response)
+
+    return intent, cleaned_response

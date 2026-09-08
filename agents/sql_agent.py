@@ -1,36 +1,32 @@
-﻿import os
-
-from dotenv import load_dotenv
-
-from langchain_google_genai import ChatGoogleGenerativeAI
+﻿from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.output_parsers import StrOutputParser
 
-from prompts.sql_prompt import sql_prompt
-
-
-load_dotenv()
+from prompts.sql_prompt import sql_prompt # pyright: ignore[reportAttributeAccessIssue]
+from config import GOOGLE_API_KEY, GEMINI_MODEL
 
 
 def create_sql_agent():
 
-    api_key = os.getenv("GOOGLE_API_KEY")
-
-    if not api_key:
+    if not GOOGLE_API_KEY:
         raise ValueError(
             "GOOGLE_API_KEY not found in .env file"
         )
 
     llm = ChatGoogleGenerativeAI(
-        model="gemini-2.5-flash",
-        google_api_key=api_key,
-        temperature=0.2,
+        model=GEMINI_MODEL,
+        google_api_key=GOOGLE_API_KEY,
+        temperature=0,
     )
 
-    return sql_prompt | llm | StrOutputParser()
+    return (
+        sql_prompt
+        | llm
+        | StrOutputParser()
+    )
 
 
 def run_sql_agent(question: str):
 
-    agent = create_sql_agent()
+    sql_agent = create_sql_agent()
 
-    return agent.invoke({"question": question})
+    return sql_agent.invoke({"question": question})
