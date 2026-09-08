@@ -13,44 +13,26 @@ def detect_intent(question: str) -> str:
 
     question_lower = question.lower()
 
-    # SQL Intent
     sql_keywords = [
-        "sql",
-        "select",
-        "join",
-        "query",
-        "database",
-        "table",
-        "group by",
-        "window function",
+        "sql", "select", "join", "query", "database", "table",
+        "group by", "window function",
     ]
 
-    # Python Intent
     python_keywords = [
-        "python",
-        "pandas",
-        "numpy",
-        "dataframe",
-        "code",
+        "python", "pandas", "numpy", "dataframe", "code",
     ]
 
-    # Check SQL
     if any(keyword in question_lower for keyword in sql_keywords):
         return "sql"
 
     if any(keyword in question_lower for keyword in python_keywords):
         return "python"
 
-    # KPI Intent
     kpi_keywords = [
-        "kpi",
-        "key performance indicator",
-        "metrics",
-        "what should i track",
-        "dashboard metrics",
+        "kpi", "key performance indicator", "metrics",
+        "what should i track", "dashboard metrics",
     ]
 
-    # Check KPI
     return (
         "kpi"
         if any(keyword in question_lower for keyword in kpi_keywords)
@@ -58,7 +40,7 @@ def detect_intent(question: str) -> str:
     )
 
 
-def route_question(question: str):
+def route_question(question: str, chat_history: list | None = None):
     """
     Route the question to the correct AI agent.
     """
@@ -66,22 +48,14 @@ def route_question(question: str):
     intent = detect_intent(question)
 
     if intent == "sql":
-
         response = run_sql_agent(question)
-
     elif intent == "python":
-
         response = run_python_agent(question)
-
     elif intent == "kpi":
-
         response = run_kpi_agent(question)
-
     else:
+        response = run_analyst_agent(question, chat_history=chat_history)
 
-        response = run_analyst_agent(question)
-
-    # ⭐ CLEAN THE RESPONSE HERE
     cleaned_response = clean_response(response)
 
     return intent, cleaned_response

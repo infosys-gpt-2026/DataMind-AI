@@ -203,16 +203,20 @@ def extract_text(response) -> str:
 # RUN ANALYST AGENT
 # ============================================================
 
-def run_analyst_agent(question: str) -> str:
+def run_analyst_agent(question: str, chat_history: list | None = None) -> str:
     """
-    Run the Data Analyst agent and return
-    a clean response.
+    Run the Data Analyst agent and return a clean response.
+
+    chat_history lets the agent remember earlier turns in the same session
+    (e.g. so a dataset loaded on turn 1 is still known about on turn 2).
+    Pass the same list back in on each call and it will be extended by
+    the caller (see main.py).
     """
 
     result = analyst_agent_executor.invoke(
         {
             "question": question,
-            "chat_history": [],
+            "chat_history": chat_history or [],
         }
     )
 
