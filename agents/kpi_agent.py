@@ -6,6 +6,9 @@ from config import GOOGLE_API_KEY, GEMINI_MODEL
 
 
 def create_kpi_agent():
+    """
+    Create the KPI recommendation and analysis chain.
+    """
 
     if not GOOGLE_API_KEY:
         raise ValueError(
@@ -24,15 +27,22 @@ def create_kpi_agent():
     )
 
 
-def run_kpi_agent(question: str) -> str:
+def run_kpi_agent(
+    question: str,
+    chat_history: list | None = None,
+) -> str:
     """
-    Run the KPI recommendation agent.
+    Run the KPI agent with optional conversation history.
     """
+
+    if chat_history is None:
+        chat_history = []
 
     kpi_agent = create_kpi_agent()
 
     return kpi_agent.invoke(
         {
             "question": question,
+            "chat_history": chat_history,
         }
     )

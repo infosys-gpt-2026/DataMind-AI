@@ -22,7 +22,7 @@ def create_sql_chain():
 
     model_name = os.getenv(
         "GEMINI_MODEL",
-        "gemini-2.0-flash",
+        "gemini-3.6-flash",
     )
 
     llm = ChatGoogleGenerativeAI(

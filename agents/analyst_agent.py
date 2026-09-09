@@ -142,84 +142,51 @@ analyst_agent_executor = AgentExecutor(
 # RESPONSE CLEANER
 # ============================================================
 
-def extract_text(response) -> str:
-    """
-    Convert Gemini/LangChain response formats
-    into a clean text string.
-    """
+def extract_text(response):
+    """Extract clean text from Gemini responses."""
 
-    # Normal string
     if isinstance(response, str):
-        return response.strip()
+        return response
 
-    # Gemini may return a list of content blocks
     if isinstance(response, list):
-
         text_parts = []
 
         for item in response:
-
             if isinstance(item, dict):
 
-                if "text" in item:
+                # Gemini text block
+                if item.get("type") == "text":
                     text_parts.append(
-                        str(item["text"])
+                        item.get("text", "")
                     )
 
-                elif "content" in item:
+                # Fallback
+                elif "text" in item:
                     text_parts.append(
-                        extract_text(item["content"])
+                        str(item["text"])
                     )
 
             elif isinstance(item, str):
                 text_parts.append(item)
 
-            else:
-                text_parts.append(str(item))
+        return "".join(text_parts).strip()
 
-        return "\n".join(text_parts).strip()
-
-    # Dictionary response
-    if isinstance(response, dict):
-
-        if "text" in response:
-            return str(response["text"]).strip()
-
-        if "content" in response:
-            return extract_text(response["content"])
-
-        if "output" in response:
-            return extract_text(response["output"])
-
-    # AIMessage or similar LangChain object
-    if hasattr(response, "content"):
-        return extract_text(response.content) # pyright: ignore[reportAttributeAccessIssue]
-
-    # Fallback
-    return str(response).strip()
-
+    return str(response)
 
 # ============================================================
 # RUN ANALYST AGENT
 # ============================================================
+def run_analyst_agent(
+    question: str,
+    chat_history: list | None = None
+) -> str:
 
-def run_analyst_agent(question: str, chat_history: list | None = None) -> str:
-    """
-    Run the Data Analyst agent and return a clean response.
+    if chat_history is None:
+        chat_history = []
 
-    chat_history lets the agent remember earlier turns in the same session
-    (e.g. so a dataset loaded on turn 1 is still known about on turn 2).
-    Pass the same list back in on each call and it will be extended by
-    the caller (see main.py).
-    """
+    result = analyst_agent_executor.invoke({
+        "question": question,
+        "chat_history": chat_history,
+    })
 
-    result = analyst_agent_executor.invoke(
-        {
-            "question": question,
-            "chat_history": chat_history or [],
-        }
-    )
-
-    response = result.get("output", "")
-
-    return extract_text(response)
+    return extract_text(result["output"])
